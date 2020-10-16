@@ -13,6 +13,18 @@ class Server(object):
         self.password = password
         self.initscript = initscript
 
+# RebuildImage object to store new image parameters
+class RebuildImage(object):
+    def __init__(self, hostImageID = None, imageDescription = None):
+        self.hostImageID = hostImageID
+        self.imageDescription = imageDescription
+
+# Port object to store enabled port
+class Port(object):
+    def __init__(self, portNumber = None, protocol = None):
+        self.portNumber = portNumber
+        self.protocol = protocol
+
 # Server object service to handle object functions
 class ServerService(BaseAPI):
     def __init__(self, *args, **kwargs):
@@ -110,4 +122,120 @@ class ServerService(BaseAPI):
         
         return None
     
+    # Rebuild a server
+    def Rebuild(self, id = None, imgData = None):     
+        # Check if id is passed
+        if id is None or id == "":
+            return "No server 'id' was provided"
+        
+        # If statement block to check for valid RebuildImage object
+        if type(imgData) is not type(RebuildImage()):
+            return "No image data was provided"
+        if imgData.hostImageID is None or str(imgData.hostImageID) == "":
+            return "No image 'hostImageID' was provided"
+        elif imgData.hostImageID is None or str(imgData.hostImageID) == "":
+            return "No image 'imageDescription' was provided"
+           
+        # Send data to API and get response
+        data = self.getData("servers/{}/rebuild".format(id), type=POST, params=imgData.__dict__)
+
+        # Return message response or data
+        if data is not None:
+            if "message" in data:
+                return data["message"]
+        
+        return None
     
+    # Resize a server
+    def Resize(self, id = None, sizeID = None):     
+        # Check if id is passed
+        if id is None or id == "":
+            return "No server 'id' was provided"
+        
+        # If statement block to check for valid RebuildImage object
+        if sizeID is None or sizeID == "":
+            return "No image data was provided"
+        
+        resizeParams = {
+            "size": sizeID
+        }
+           
+        # Send data to API and get response
+        data = self.getData("servers/{}/resize".format(id), type=POST, params=resizeParams)
+
+        # Return message response or data
+        if data is not None:
+            if "message" in data:
+                return data["message"]
+        
+        return None
+    
+    # Restart a server
+    def Restart(self, id = None):     
+        # Check if id is passed
+        if id is None or id == "":
+            return "No server 'id' was provided"
+
+        # Send data to API and get response
+        data = self.getData("servers/{}/restart".format(id), type=POST)
+
+        # Return message response or data
+        if data is not None:
+            if "message" in data:
+                return data["message"]
+        
+        return None
+    
+    # Change the protection status of a server
+    def Protection(self, id = None, enabled = None):     
+        # Check if id is passed
+        if id is None or id == "":
+            return None, "No server 'id' was provided"
+
+        # Check if enabled was provided and is a boolean
+        if enabled is None:
+            return "Boolean 'enabled' was not provided"
+        elif type(enabled) is not type(True):
+            return None, "Invalid 'enabled' was provided"
+
+        region = lambda e: "bvm-lux" if enabled else ""
+
+        protectParams = {
+            "enable": enabled,
+            "region": region(enabled)
+        }
+
+        # Send data to API and get response
+        data = self.getData("servers/{}/protection".format(id), type=POST, params=protectParams)
+
+        # Return message response or data
+        if data is not None:
+            if "message" in data:
+                return None, data["message"]
+        
+        return data, None
+
+    # SetPorts sets the enabled ports on a server for DDoS protection (Needs Protection enabled)
+    def SetPorts(self, id = None, ports = None):     
+        # Check if id is passed
+        if id is None or id == "":
+            return None, "No server 'id' was provided"
+
+        # Check if enabled was provided and is a boolean
+        if ports is None:
+            return None, "No 'ports' provided"
+        
+        portList = []
+
+        for p in ports:
+            portList.append(p.__dict__)
+
+        # Send data to API and get response
+        data = self.getData("servers/{}/protection/ports".format(id), type=POST, params=portList)
+
+        # Return message response or data
+        if data is not None:
+            if "message" in data:
+                return None, data["message"]
+        
+        return data, None    

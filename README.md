@@ -42,6 +42,19 @@ accountObj = client.Account.Show()
 if accountObj is not None:
     # process data
 ```
+#### Usage
+```python
+usage = client.Account.Usage("2020-10")
+if usage is not None:
+    # process data
+```
+#### History
+```python
+history = client.Account.History(1, 25)
+if history is not None:
+    # process data
+```
+
 ### SSHKeys
 #### List
 ```python
@@ -59,7 +72,6 @@ if err is not None:
 else:
     # process data
 ```
-
 #### Delete
 ```python
 err = client.SSHKeys.Delete(sshKeyObj.id)
@@ -93,6 +105,17 @@ newTransaction = pybitlaunch.Transaction(
 )
 
 transactionObj, err = client.Transactions.Create(newTransaction)
+if err is not None:
+    # handle error
+else:
+    # process data
+```
+
+### CreateOptions
+#### Show
+```python
+createOptionsArray, err = client.CreateOptions.Show(hostID)
+# createOptionsArray = ['hostID', 'image', 'region', 'size', 'available', 'bandwidthCost', 'planTypes', 'hostOptions']
 if err is not None:
     # handle error
 else:
@@ -141,12 +164,50 @@ err = client.Servers.Destroy(serverObj.id)
 if err is not None:
     # handle error
 ```
-
-### CreateOptions
-#### Show
+#### Rebuild
 ```python
-createOptionsArray, err = client.CreateOptions.Show(hostID)
-# createOptionsArray = ['hostID', 'image', 'region', 'size', 'available', 'bandwidthCost', 'planTypes', 'hostOptions']
+createOpts, err = client.CreateOptions.Show(4)
+if err is not None:
+    # handle error
+
+newImage = pybitlaunch.RebuildImage(
+    createOpts["image"][0]["versions"][1]["id"],
+    createOpts["image"][0]["versions"][1]["description"]
+)
+
+err = client.Servers.Rebuild(serverObj.id, newImage)
+if err is not None:
+    # handle error
+```
+#### Resize
+```python
+err = client.Servers.Resize(serverObj.id, "nibble-2048")
+if err is not None:
+    # handle error
+```
+#### Restart
+```python
+err = client.Servers.Restart(serverObj.id)
+if err is not None:
+    # handle error
+```
+#### Protection
+```python
+server, err = client.Servers.Protection(serverObj.id, True)
+if err is not None:
+    # handle error
+else:
+    # process data
+```
+#### SetPorts
+```python
+ports = [
+    pybitlaunch.Port(1234, "tcp"),
+    pybitlaunch.Port(1234, "udp"),
+    pybitlaunch.Port(1235, "tcp"),
+]
+
+server, err = client.Servers.SetPorts(serverObj.id, ports)
 if err is not None:
     # handle error
 else:

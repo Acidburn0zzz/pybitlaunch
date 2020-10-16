@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pybitlaunch", 
-    version="1.0.0",
+    version="1.1.0",
     author="BitLaunch",
     author_email="support@bitlaunch.io",
     description="pybitlaunch is a python client library for accessing the BitLaunch API.",

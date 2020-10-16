@@ -1,7 +1,7 @@
 from .Account import AccountService
 from .SSHKeys import SSHKeyService, SSHKey
 from .Transactions import TransactionService, Transaction
-from .Servers import ServerService, Server
+from .Servers import ServerService, Server, Port, RebuildImage
 from .CreateOptions import CreateOptionsService
 from .BaseAPI import BaseAPI
 
